@@ -7,15 +7,16 @@ chrome.notifications.onClicked.addListener(function(notificationId) {
         chrome.tabs.create({url: notificationId});
         chrome.notifications.clear(notificationId);
     });
-var showNotification = function(message, url) {
+var showNotification = function(title, message, url) {
     console.log('show notification message: ' + message + ', url: ' + url);
     var option = {
         type: 'basic',
-        title: 'Merry Christmas',
+        title: title,
         message: message,
         iconUrl: 'Liu.png',
     };
     var notificationId = url==undefined ? 'https://www.zhihu.com' : url;
+    chrome.notifications.clear(notificationId);
     chrome.notifications.create(notificationId, option);
 }
 
@@ -46,9 +47,9 @@ var currentIndex = 0;
 var query = function() {
     localApi('job', function(data) {
             var json = JSON.parse(data);
-            if (currentIndex < json.index) {
+            if (currentIndex < json.index || true) { // debug
                 currentIndex = json.index;
-                showNotification(json.content.text, json.content.target_url);
+                showNotification(json.content.title, json.content.body, json.content.target_url);
             }
             queryCounter++;
             if (queryCounter > maxQueryTime) {
@@ -57,6 +58,6 @@ var query = function() {
             }
     });
 };
-queryCicle=600;
+queryCicle=6000;
 queryInterval=setInterval(query, queryCicle);
 console.log('query interval is started');
