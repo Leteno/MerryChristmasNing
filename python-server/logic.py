@@ -1,5 +1,6 @@
 
 import asyncio
+import make_xml
 
 ## please save this to config file
 # currentIndex=1
@@ -16,14 +17,17 @@ def getPoemtry():
             content=data[4]
             print('getPoemtry: title %s, time %s, author %s, content %s' % (title, time, author, content))
             poemtryLine= poemtryLine + 1
-            yield (title, content, 'https://www.bilibili.com')
+            target_file = "//tmp/merry_christmas_ning.xml"
+            target_url = "file:///tmp/merry_christmas_ning.xml"
+            make_xml.make(title, time, author, content, target_file)
+            yield (title, content, target_url)
 
 def getPoemtryJson():
     machine = getPoemtry()
     currentIndex = 1
     while(True):
         title, content, url = machine.send(None)
-        json = '{"index": %d, "content": {"title": "%s", "body": "%s", "taget_url": "%s"}}' % (currentIndex, title, content, url)
+        json = '{"index": %d, "content": {"title": "%s", "body": "%s", "target_url": "%s"}}' % (currentIndex, title, content, url)
         currentIndex = currentIndex + 1
         yield json
 
