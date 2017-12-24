@@ -3,7 +3,7 @@ import asyncio
 from aiohttp import web
 
 async def job(request):
-    text = '{"index": 2, "content": { "text": "hello my dear friend2"}}'
+    text = '{"index": 2, "content": { "text": "hello my dear friend2", "target_url": "https://bangumi.bilibili.com/anime/3461/"}}'
     return web.Response(body=text.encode('utf-8'))
 
 async def init(loop):

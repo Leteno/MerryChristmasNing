@@ -3,9 +3,21 @@
 // Notification part
 // ##################
 Notification.requestPermission();
-chrome.notifications.onClicked.addListener(
-                 
-                 );
+chrome.notifications.onClicked.addListener(function(notificationId) {
+        chrome.tabs.create({url: notificationId});
+        chrome.notifications.clear(notificationId);
+    });
+var showNotification = function(message, url) {
+    console.log('show notification message: ' + message + ', url: ' + url);
+    var option = {
+        type: 'basic',
+        title: 'Merry Christmas',
+        message: message,
+        iconUrl: 'Liu.png',
+    };
+    var notificationId = url==undefined ? 'https://www.zhihu.com' : url;
+    chrome.notifications.create(notificationId, option);
+}
 
 // ##################
 // api part
@@ -36,7 +48,7 @@ var query = function() {
             var json = JSON.parse(data);
             if (currentIndex < json.index) {
                 currentIndex = json.index;
-                alert('content is: ' + json.content.text);
+                showNotification(json.content.text, json.content.target_url);
             }
             queryCounter++;
             if (queryCounter > maxQueryTime) {
