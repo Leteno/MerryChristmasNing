@@ -22,9 +22,6 @@ def getPoemtryJson():
     machine = getPoemtry()
     currentIndex = 1
     while(True):
-        if (currentIndex > 5):
-            machine = getPoemtry() # reset, ugly
-            currentIndex = 1
         title, content, url = machine.send(None)
         json = '{"index": %d, "content": {"title": "%s", "body": "%s", "taget_url": "%s"}}' % (currentIndex, title, content, url)
         currentIndex = currentIndex + 1

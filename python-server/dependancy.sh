@@ -23,19 +23,21 @@ python3 -m pip install aiohttp || {
 old_pwd_tmp=`pwd`
 cd build
 poem_file=poem.dat # where poem lies
-wget https://github.com/hebingchang/ancient_poetry/raw/master/poetry.sql
+[ -f poetry.sql ] || { # download when not exist
+    wget https://github.com/hebingchang/ancient_poetry/raw/master/poetry.sql
+}
 left=`grep INSERT poetry.sql`
 
 old_IFS_tmp=$IFS
 IFS="),("
 count=0
+echo "seperate progress start..."
 for i in $left ; do
-    count=`expr $count + 1`
-    [[ $count -eq 100 ]] && break
     echo $i
 done > poem_seperate.tmp
 IFS=$old_IFS_tmp
 
+echo "merge progress start..."
 awk '\
 BEGIN{ forgetFirstLine="T"; line=0} \
 { \
@@ -46,5 +48,8 @@ BEGIN{ forgetFirstLine="T"; line=0} \
     else {printf $0","; line=line+1; if(line==5) print "";} \
   } \
 } \
-' poem_seperate.tmp > $poem_file
+' poem_seperate.tmp > poem_with_quote.tmp
+sed -e "s/\'//g"  poem_with_quote.tmp > $poem_file
 cd "$old_pwd_tmp"
+
+echo done
