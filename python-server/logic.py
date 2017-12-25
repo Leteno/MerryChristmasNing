@@ -17,8 +17,8 @@ def getPoemtry():
             content=data[4]
             print('getPoemtry: title %s, time %s, author %s, content %s' % (title, time, author, content))
             poemtryLine= poemtryLine + 1
-            target_file = "//tmp/merry_christmas_ning.xml"
-            target_url = "file:///tmp/merry_christmas_ning.xml"
+            target_file = "//tmp/merry_christmas_ning.htm"
+            target_url = "file:///tmp/merry_christmas_ning.htm"
             make_xml.make(title, time, author, content, target_file)
             yield (title, content, target_url)
 

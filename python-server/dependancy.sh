@@ -19,26 +19,32 @@ python3 -m pip install aiohttp || {
 ####################
 # poetry stuff
 ####################
-[ ! -d build ] && mkdir build
-old_pwd_tmp=`pwd`
-cd build
-poem_file=poem.dat # where poem lies
-[ -f poetry.sql ] || { # download when not exist
-    wget https://github.com/hebingchang/ancient_poetry/raw/master/poetry.sql
-}
-left=`grep INSERT poetry.sql`
+function prepare_poemtry() {
+    echo "prepare_poemtry"
+    [ ! -d build ] && mkdir build
+    old_pwd_tmp=`pwd`
+    cd build
+    poem_file=poem.dat # where poem lies
+    [ -f poem.dat ] && { # no need to create again
+        cd $old_pwd_tmp
+        return
+    }
+    [ -f poetry.sql ] || { # download when not exist
+        wget https://github.com/hebingchang/ancient_poetry/raw/master/poetry.sql
+    }
+    left=`grep INSERT poetry.sql`
 
-old_IFS_tmp=$IFS
-IFS="),("
-count=0
-echo "seperate progress start..."
-for i in $left ; do
-    echo $i
-done > poem_seperate.tmp
-IFS=$old_IFS_tmp
+    old_IFS_tmp=$IFS
+    IFS="),("
+    count=0
+    echo "seperate progress start..."
+    for i in $left ; do
+        echo $i
+    done > poem_seperate.tmp
+    IFS=$old_IFS_tmp
 
-echo "merge progress start..."
-awk '\
+    echo "merge progress start..."
+    awk '\
 BEGIN{ forgetFirstLine="T"; line=0} \
 { \
   if (forgetFirstLine == "T") { forgetFirstLine="F"; } \
@@ -48,8 +54,22 @@ BEGIN{ forgetFirstLine="T"; line=0} \
     else {printf $0","; line=line+1; if(line==5) print "";} \
   } \
 } \
-' poem_seperate.tmp > poem_with_quote.tmp
-sed -e "s/\'//g"  poem_with_quote.tmp > $poem_file
-cd "$old_pwd_tmp"
+    ' poem_seperate.tmp > poem_with_quote.tmp
+    sed -e "s/\'//g"  poem_with_quote.tmp > $poem_file
+    cd "$old_pwd_tmp"
+}
+prepare_poemtry
+
+##########################
+# prepare the website res
+##########################
+function prepareWebsiteRes() {
+    echo "prepare website res"
+    old_pwd_tmp=`pwd`
+    cp web-res/*  /tmp # yes, the htm file is save to /tmp folder
+    cd $old_pwd_tmp
+}
+prepareWebsiteRes
+
 
 echo done
